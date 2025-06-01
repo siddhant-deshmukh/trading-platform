@@ -2,9 +2,9 @@
   "name": "backend",
   "version": "0.0.0",
   "scripts": {
-    "build": "npx ts-node ./scripts/build.ts",
+    "build": "ts-node ./scripts/build.ts",
     "clean-install": "rm -rf ./node_modules && rm -r package-lock.json && npm i",
-    "dev": "NODE_ENV=development npx ts-node ./src",
+    "dev": "NODE_ENV=development ts-node ./src",
     "dev:hot": "nodemon --exec \"npm run dev\" --watch ./src --ext .ts",
     "lint": "eslint .",
     "start": "NODE_ENV=production node -r ./config.js ./dist",

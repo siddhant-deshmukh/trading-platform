@@ -9,6 +9,7 @@ import { post } from "@/lib/apiCallClient";
 import LoadingSpinner from "./LoadingSpinner";
 import { FaArrowLeft, FaUser } from "react-icons/fa";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { useEffect, useState } from "react";
 
 
 
@@ -18,6 +19,7 @@ function Navbar() {
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
+  const [hasMounted, setHasMounted] = useState(false);
 
   const getActiveTab = () => {
     const active_tab = searchParams.get('tab');
@@ -25,6 +27,10 @@ function Navbar() {
     if (!user) return 'all_projects';
     return active_tab as string;
   };
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   const activeTab = getActiveTab();
   const isParentPath = pathName === '/projects' || pathName === '/';
@@ -35,14 +41,19 @@ function Navbar() {
     router.push(`?tab=${value}`, { scroll: false });
     // Add more navigation logic for other tabs
   };
-
+  if (authLoading || !hasMounted) {
+    return <div className="sticky top-0 w-full flex items-center justify-between py-2 bg-primary-foreground">
+      <div className="w-96 bg-slate-100 h-7 animate-pulse">
+      </div>
+    </div>
+  }
   return (
     <div className="sticky top-0 w-full flex items-center justify-between py-2 bg-primary-foreground">
       {
-        isParentPath && !authLoading &&
+        isParentPath &&
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-[400px]">
           <TabsList>
-            {!user && !authLoading && <TabsTrigger value="all_projects">Projects ( All )</TabsTrigger>}
+            {!user && <TabsTrigger value="all_projects">Projects ( All )</TabsTrigger>}
             {
               user &&
               <>
@@ -56,24 +67,14 @@ function Navbar() {
         </Tabs>
       }
       {
-        authLoading &&
-        <div className="w-96 bg-slate-100 h-7 animate-pulse">
-        </div>
-      }
-      {
         !isParentPath &&
         <Button variant="outline" onClick={() => { router.back() }}>
           <FaArrowLeft />
         </Button>
       }
       {
-        !user && !authLoading && <div className="">
+        !user && <div className="">
           <AuthPopup />
-        </div>
-      }
-      {
-        !user && authLoading && <div className="px-5">
-          <LoadingSpinner size={15} />
         </div>
       }
       {
@@ -89,7 +90,7 @@ function Navbar() {
             <DropdownMenuLabel>{user.username}</DropdownMenuLabel>
             <DropdownMenuLabel className="truncate">{user.email}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={()=> {
+            <DropdownMenuItem onClick={() => {
               post('/logout').then(() => {
                 setUser(null);
                 router.refresh();

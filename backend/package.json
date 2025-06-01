@@ -13,7 +13,7 @@
     "gen-migrate:dev": "DOTENV_CONFIG_PATH=./config/.env.development node -r dotenv/config node_modules/.bin/prisma migrate dev",
     "gen-migrate": "DOTENV_CONFIG_PATH=./config/.env.production node -r dotenv/config node_modules/.bin/prisma migrate dev",
     "migrate:dev": "DOTENV_CONFIG_PATH=./config/.env.development node -r dotenv/config node_modules/.bin/prisma migrate deploy",
-    "migrate": "DOTENV_CONFIG_PATH=./config/.env.production node -r dotenv/config node_modules/.bin/prisma migrate deploy"
+    "migrate": "node -r dotenv/config node_modules/.bin/prisma migrate deploy"
   },
   "engines": {
     "node": ">=16.0.0"

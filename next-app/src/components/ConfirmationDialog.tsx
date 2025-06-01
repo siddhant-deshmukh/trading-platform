@@ -12,6 +12,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"  
 import { Button } from "@/components/ui/button"
+import { useState } from "react";
 
 interface Props {
   variant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined
@@ -25,7 +26,7 @@ interface Props {
 }
 
 export function ConfirmationDialog(props: Props) {
-
+  const [loading, setLoading] = useState(false)
   const { buttonText, variant, dialogTitle, postConfirmationFunction, postRejectionFunction, dialogCancelBtnText, dialogDesc, dialogSubmitBtnText } = props;
 
   return (
@@ -45,7 +46,10 @@ export function ConfirmationDialog(props: Props) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={()=> {postRejectionFunction()}} >{ dialogCancelBtnText ? dialogCancelBtnText : 'Cancel' }</AlertDialogCancel>
-          <AlertDialogAction onClick={()=> {postConfirmationFunction()}} >{ dialogSubmitBtnText ? dialogSubmitBtnText : 'Confirm' }</AlertDialogAction>
+          <AlertDialogAction 
+            disabled={loading}
+            onClick={()=> { setLoading(true); postConfirmationFunction()}} >{ dialogSubmitBtnText ? dialogSubmitBtnText : 'Confirm' }
+            </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>    

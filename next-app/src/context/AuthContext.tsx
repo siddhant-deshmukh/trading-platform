@@ -9,11 +9,11 @@ export const AuthContext = createContext<{
   user: IUser | null,
   setUser: Dispatch<SetStateAction<IUser | null>>,
   authLoading: boolean
-}>({ user: null, setUser: ()=> {}, authLoading: false });
+}>({ user: null, setUser: ()=> {}, authLoading: true });
 
 export const AuthProvider = ({ children }: { children : React.ReactNode }) => {
   const [user, setUser] = useState<IUser | null>(null);
-  const [authLoading, setAuthLoading] = useState<boolean>(false);
+  const [authLoading, setAuthLoading] = useState<boolean>(true);
 
   useEffect(() => {
     setAuthLoading(true);

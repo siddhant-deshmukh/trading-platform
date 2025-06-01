@@ -12,7 +12,7 @@ import { post } from '@/lib/apiCallClient';
 import { useRouter } from 'next/navigation';
 
 function ChangeCustomerStatus(props: ProjectWithRelations) {
-  const { selectedBid, ownerId } = props
+  const { selectedBid, ownerId, status: project_status } = props
   const { user } = useAuth();
   const router = useRouter();
 
@@ -27,7 +27,14 @@ function ChangeCustomerStatus(props: ProjectWithRelations) {
     }
   }
 
-  if(user?.id == ownerId) {
+  if(!selectedBid) {
+    return (
+      <span className={`status-badge badge-${project_status}`}>
+        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        {project_status}
+      </span>
+    )
+  } else if(user?.id == ownerId) {
     return (
       <div className={`badge-${selectedBid.customerStatus} rounded-xl`}>
         <DropdownMenu>

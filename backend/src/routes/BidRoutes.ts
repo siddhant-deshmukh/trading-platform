@@ -151,7 +151,7 @@ router.get(
 router.put(
   '/:bid_id',
   [
-    param('bid_id')
+    param('bid_id')IN_PROGRESS
       .notEmpty()
       .withMessage('Bid ID is required and must be a string.'),
     body('estimatedTime')
@@ -279,7 +279,7 @@ router.post(
         new_project_status = ProjectStatus.COMPLETED;
       } else if (status == BidStatus.REJECTED && current_owner_status == BidStatus.IN_PROGRESS) {
         new_bid_customer_status = BidStatus.REJECTED;
-        new_project_status = ProjectStatus.IN_PROGRESS;
+        new_project_status = ProjectStatus.REJECTED;
         new_selected_bid_id = null;
       } else {
         res.status(HttpStatusCodes.BAD_REQUEST).json({ msg: `Status can not be changed from ${current_owner_status} to ${status}` });

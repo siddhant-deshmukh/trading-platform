@@ -19,8 +19,8 @@ interface IProps {
 const BidForm = (props: IProps) => {
   // Initialize state for form fields
   const [message, setMessage] = useState<string>('');
-  const [quote, setQuote] = useState<number | undefined>(); // Use string for input to handle empty state easily
-  const [estimatedTime, setEstimatedTime] = useState<number | undefined>();
+  const [quote, setQuote] = useState<number>(0); // Use string for input to handle empty state easily
+  const [estimatedTime, setEstimatedTime] = useState<number>(0);
  
   const [open, setOpen] = React.useState(false);
 
@@ -56,8 +56,8 @@ const BidForm = (props: IProps) => {
       if (data) {
         setOpen(false);
         router.refresh();
-        setEstimatedTime(undefined);
-        setQuote(undefined);
+        setEstimatedTime(0);
+        setQuote(0);
         setMessage('');
       }
     } catch (apiError: any) {
@@ -77,7 +77,8 @@ const BidForm = (props: IProps) => {
         <DialogTrigger asChild >
           <Button className=''> + Add Bid</Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent>undefined
+        undefined
           <DialogHeader>
             <DialogTitle className='text-2xl font-semibold' >Create Bid</DialogTitle>
           </DialogHeader>

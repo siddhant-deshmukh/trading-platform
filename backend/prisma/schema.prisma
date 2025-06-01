@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums for various statuses
+enum ProjectStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum BidStatus {
+  COMPLETED
+  REJECTED
+  IN_PROGRESS
+  PENDING
+}
+
+enum BidTrackingType {
+  SELECTION
+  MESSAGE
+  REJECTION
+  COMPLETION
+}
+
+// 1. User Model
+model User {
+  id         Int    @id @default(autoincrement())
+  name       String
+  username   String    @unique
+  email      String    @unique
+  password   String    // Hashed password
+  contactNo  String?   @map("contact_no") // Optional, maps to contact_no column
+  bio        String?   // Optional
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+   // Relations
+  ownedProjects Project[] @relation("OwnedProjects")   // <--- FIX 1: Added explicit relation name
+  bids          Bid[]     // Bids placed by this user (as seller)
+  bidTrackings  BidTracking[] // Bid tracking entries related to this user
+}
+
+// 2. Project Model
+model Project {
+  id             Int           @id @default(autoincrement())
+  title          String
+  description    String
+  budgetMin      Decimal?      @map("budget_min") @db.Decimal(10, 2) // .00 precision
+  budgetMax      Decimal?      @map("budget_max") @db.Decimal(10, 2) // .00 precision
+  deadline       DateTime?
+  status         ProjectStatus @default(PENDING)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  // Relations
+  ownerId        Int           @map("owner_id")
+  owner          User          @relation("OwnedProjects", fields: [ownerId], references: [id])
+
+  bids           Bid[]         @relation("AllProjectBids") 
+  selectedBidId  Int?          @unique @map("selected_bid_id") // ID of the selected bid
+  selectedBid    Bid?          @relation("SelectedProjectBid", fields: [selectedBidId], references: [id]) // The actual selected bid
+
+  @@map("projects") // Maps model name to table name
+}
+
+// 3. Bid Model
+model Bid {
+  id             Int             @id @default(autoincrement())
+  bidderId       Int             @map("bidder_id") // The user who placed the bid (seller)
+  projectId      Int             @map("project_id")
+  estimatedTime  Int             @map("estimated_time") // Estimated completion time in days/hours
+  quote          Decimal         @db.Decimal(10, 2) // Bid amount
+  bidderStatus   BidStatus       @default(PENDING) @map("bidder_status")
+  customerStatus BidStatus       @default(PENDING) @map("customer_status")
+  message        String?         // Brief message from seller
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  // Relations
+  bidder         User            @relation(fields: [bidderId], references: [id])
+  project        Project         @relation("AllProjectBids", fields: [projectId], references: [id])
+  // A bid can be the selected bid for a project
+  projectSelectedAsBid Project?  @relation("SelectedProjectBid")
+
+  bidTrackings   BidTracking[]   // Tracking entries for this specific bid
+
+  @@unique([bidderId, projectId]) // A seller can only bid once per project
+  @@map("bids") // Maps model name to table name
+}
+
+// 4. BidTracking Model
+model BidTracking {
+  id        Int             @id @default(autoincrement())
+  bidId     Int             @map("bid_id")
+  userId    Int             @map("user_id") // User who initiated the tracking event (buyer or seller)
+  type      BidTrackingType
+  message   String?         // Optional message for the tracking event
+  createdAt DateTime        @default(now())
+
+  // Relations
+  bid       Bid             @relation(fields: [bidId], references: [id])
+  user      User            @relation(fields: [userId], references: [id])
+
+  @@map("bid_trackings") // Maps model name to table name
+}

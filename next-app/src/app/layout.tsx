@@ -6,6 +6,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import Navbar from "@/components/Navbar";
 import ScrollToTop from "@/components/ScrollTop";
 import CreateProjectForm from "./projects/components/ProjectForm";
+import { Suspense } from 'react'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +35,9 @@ export default function RootLayout({
       > 
         <ScrollToTop />
         <AuthProvider>
-          <Navbar />
+          <Suspense fallback={<div></div>}>
+            <Navbar />
+          </Suspense>
           {children}
           <div className='sticky bottom-5 right-1'>
             <CreateProjectForm />

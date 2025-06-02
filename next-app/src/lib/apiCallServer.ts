@@ -31,7 +31,7 @@ const apiCallServer = async <T = any>(
 
     const axiosConfig: AxiosRequestConfig = {
       method,
-      url: is_next_url? `${NEXTJS_BASE_URL}api${url}`: `${API_BASE_URL}${url}`,
+      url: (is_next_url === true)? `${NEXTJS_BASE_URL}api${url}`: `${API_BASE_URL}${url}`,
       data,
       ...config,
     };

@@ -93,13 +93,23 @@ router.post(
     // Generate JWT token (optional, but good for immediate login after registration)
     const token = jwt.sign({ userId: newUser.id }, ENV.JwtSecret, { expiresIn: ENV.TokenExpiryTime });
 
-    console.log(ENV.ServerOrigin);
 
     res.cookie('auth_token', `Bearer ${token}`, {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
       domain: ENV.ServerOrigin,
+      path: '/',
+      maxAge: ENV.TokenExpiryTime
+    });
+
+
+    
+    res.cookie('auth_token_next', `Bearer ${token}`, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      domain: ENV.ClientOriginDomain,
       path: '/',
       maxAge: ENV.TokenExpiryTime
     });
@@ -168,6 +178,15 @@ router.post(
       path: '/',
       maxAge: ENV.TokenExpiryTime
     });
+    res.cookie('auth_token_next', `Bearer ${token}`, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      domain: ENV.ClientOriginDomain,
+      path: '/',
+      maxAge: ENV.TokenExpiryTime
+    });
+
 
     res.status(HttpStatusCodes.OK).json({
       msg: 'Logged in successfully!',
@@ -183,6 +202,7 @@ router.post(
 
 router.post('/logout', (req: Request, res: Response) => {
   res.clearCookie('auth_token', { path: '/' });
+  res.clearCookie('auth_token_next', { path: '/' });
   res.status(200).json({ message: 'Logged out successfully' });
 });
 

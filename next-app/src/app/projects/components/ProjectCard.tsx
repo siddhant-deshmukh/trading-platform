@@ -6,20 +6,6 @@ interface ProjectCardProps {
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
-  const getStatusBadgeClass = (status: ProjectStatus) => {
-    switch (status) {
-      case ProjectStatus.IN_PROGRESS:
-        return 'bg-yellow-100 text-yellow-800';
-      case ProjectStatus.COMPLETED: // Assuming 'ACCEPTED' as a possible status for success
-        return 'bg-green-100 text-green-800';
-      case ProjectStatus.CANCELLED: // Assuming 'REJECTED' as a possible status for danger
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-
 
   return (
     <Link href={`/projects/${project.id}`}>

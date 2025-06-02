@@ -8,11 +8,12 @@ import { cookies } from 'next/headers';
 
 async function Projects({ searchParams } : NextServerComponentProps) {
   const { tab } = await searchParams;
-  const auth_token = (await cookies()).get('auth_token')
+  const auth_token = (await cookies()).get('auth_token_next')
   const { data: projects, msg, err } = await get<IProject[]>(`/product?tab=${tab}`, {
     headers: {
       'Authorization': auth_token?.value
-    }
+    },
+    withCredentials: true
   });
   const not_found_msg = () => {
     if(tab == 'bids' ) return 'You have not place any bids';

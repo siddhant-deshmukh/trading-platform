@@ -15,6 +15,7 @@ const ENV = jetEnv({
   JwtSecret: str,
   ServerOrigin: str,
   TokenExpiryTime: num,
+  ClientOriginDomain: str,
 });
 
 

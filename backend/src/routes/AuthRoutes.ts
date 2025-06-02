@@ -98,7 +98,7 @@ router.post(
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      domain: ENV.ServerOrigin,
+      // domain: ENV.ServerOrigin,
       path: '/',
       maxAge: ENV.TokenExpiryTime
     });
@@ -109,7 +109,7 @@ router.post(
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      domain: ENV.ClientOriginDomain,
+      // domain: ENV.ClientOriginDomain,
       path: '/',
       maxAge: ENV.TokenExpiryTime
     });
@@ -174,7 +174,7 @@ router.post(
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      domain: ENV.ServerOrigin,
+      // domain: ENV.ServerOrigin,
       path: '/',
       maxAge: ENV.TokenExpiryTime
     });
@@ -182,7 +182,7 @@ router.post(
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      domain: ENV.ClientOriginDomain,
+      // domain: ENV.ClientOriginDomain,
       path: '/',
       maxAge: ENV.TokenExpiryTime
     });

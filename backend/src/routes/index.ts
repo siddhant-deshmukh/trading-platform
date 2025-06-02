@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import BidRouter from './BidRoutes';
 import AuthRouter from './AuthRoutes';
-import ProductRouter from './ProductRoutes';
+import ProjectRouter from './ProjectRoutes';
 
 /******************************************************************************
                                 Setup
@@ -11,7 +11,7 @@ import ProductRouter from './ProductRoutes';
 const apiRouter = Router();
 
 apiRouter.use('/', AuthRouter);
-apiRouter.use('/product', ProductRouter);
+apiRouter.use('/project', ProjectRouter);
 apiRouter.use('/bid', BidRouter);
 
 

@@ -9,7 +9,7 @@ interface JwtPayload {
   userId: string;
 }
 
-export type person_type = 'all' | 'user' | 'owner' | 'bidder'
+export type person_type = 'all' | 'user' | 'owner' | 'bidder';
 
 export function authTokenFunction(allow: person_type[]) {
 
@@ -20,7 +20,7 @@ export function authTokenFunction(allow: person_type[]) {
 
       if(!req.user_id && !allow.includes('all')) {
         res.status(HttpStatusCodes.UNAUTHORIZED).json({ msg: 'Login / Register' });
-        return
+        return;
       }
       if(req.params.project_id) {
         const { project, status, msg } = await getProject(req, allow);
@@ -46,44 +46,13 @@ export function authTokenFunction(allow: person_type[]) {
       res.status(HttpStatusCodes.UNAUTHORIZED).json({ msg: 'Internal server error during token verification' });
       return;
     }
-  }
+  };
 }
-
-export const authToken = (req: Request, res: Response, next: NextFunction) => {
-  try {
-    // Get the Authorization header from the request.
-    const authHeader = req.cookies.auth_token ?? req.headers['authorization'];
-  
-    // Check if the header exists and starts with 'Bearer '.
-    // If not, no token is provided, so return HttpStatusCodes.UNAUTHORIZED Unauthorized.
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      res.status(HttpStatusCodes.UNAUTHORIZED).json({ msg: 'Authorization token required' });
-      return;
-    }
-  
-    // Extract the token part (remove 'Bearer ').
-    const token = authHeader.split(' ')[1];
-  
-    // Check if the token is actually present after splitting.
-    if (!token) {
-      res.status(HttpStatusCodes.UNAUTHORIZED).json({ msg: 'Authorization token required' });
-      return;
-    }
-    const decoded = jwt.verify(token, ENV.JwtSecret) as JwtPayload;
-    req.user_id = parseInt(decoded.userId);
-    next();
-  } catch (error) {
-    logger.err(error, true);
-    res.status(HttpStatusCodes.UNAUTHORIZED).json({ msg: 'Internal server error during token verification' });
-    return;
-  }
-};
 
 function extractToken(req: Request) {
   try {
-    const authHeader = req.cookies.auth_token ?? req.headers['authorization'];
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      // res.status(HttpStatusCodes.UNAUTHORIZED).json({ msg: 'Authorization token required' });
+    const authHeader = (req.cookies.auth_token as  string | undefined) ?? req.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ')) {
       return;
     }
 
@@ -103,6 +72,7 @@ function extractToken(req: Request) {
   }
 }
 
+// check if the URL has a project_id if it does 
 async function getProject(req: Request, allow: person_type[]) {
   try {
     const { project_id } =req.params;
@@ -112,12 +82,12 @@ async function getProject(req: Request, allow: person_type[]) {
         selectedBid: {
           include: {
             bidder: {
-              omit: { 'password': true, 'email': true, 'contactNo': true }
-            }
-          }
+              omit: { 'password': true, 'email': true, 'contactNo': true },
+            },
+          },
         },
         owner: {
-          omit: { 'password': true, 'email': true, 'contactNo': true }
+          omit: { 'password': true, 'email': true, 'contactNo': true },
         },
         _count: {
           select: {
@@ -133,7 +103,7 @@ async function getProject(req: Request, allow: person_type[]) {
     if(allow.includes('all') || allow.includes('user')) return { project };
     
     return { status: HttpStatusCodes.UNAUTHORIZED, msg: 'Access denied' };
-  } catch(err) {
+  } catch  {
     return { status: HttpStatusCodes.INTERNAL_SERVER_ERROR, msg: 'Something went wrong' };
   }
 }
@@ -147,13 +117,13 @@ async function getBid(req: Request, allow: person_type[]) {
         project: {
           include: {
             owner: {
-              omit: { 'password': true, 'email': true, 'contactNo': true }
-            }
-          }
+              omit: { 'password': true, 'email': true, 'contactNo': true },
+            },
+          },
         },
         bidder: {
-          omit: { 'password': true, 'email': true, 'contactNo': true }
-        }
+          omit: { 'password': true, 'email': true, 'contactNo': true },
+        },
       },
     });
   

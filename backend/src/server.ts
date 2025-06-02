@@ -5,7 +5,6 @@ import logger from 'jet-logger';
 import express, { Request, Response, NextFunction } from 'express';
 
 import BaseRouter from '@src/routes';
-import Paths from '@src/common/constants/Paths';
 import ENV from '@src/common/constants/ENV';
 import HttpStatusCodes from '@src/common/constants/HttpStatusCodes';
 import { RouteError } from '@src/common/util/route-errors';
@@ -25,7 +24,7 @@ const app = express();
 app.use(cookieParser());
 app.use(cors({
   origin: ENV.ClientOrigin, // Replace with your Next.js frontend URL in .env
-  credentials: true // Allow cookies to be sent
+  credentials: true, // Allow cookies to be sent
 }));
 // Basic middleware
 app.use(express.json());
@@ -48,7 +47,7 @@ if (ENV.NodeEnv === NodeEnvs.Production) {
 app.use('/', BaseRouter);
 
 // Add error handler
-app.use((err: Error, _: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, _: Request, res: Response, _next: NextFunction) => {
   if (ENV.NodeEnv !== NodeEnvs.Test.valueOf()) {
     logger.err(err, true);
   }

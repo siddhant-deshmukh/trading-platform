@@ -1,14 +1,15 @@
-import handleValidationErrors from "@src/middleware/expressValidatorErrorHandler";
-import { Router } from "express";
-import { body } from "express-validator";
-import { Request, Response } from "express";
+import handleValidationErrors from '@src/middleware/expressValidatorErrorHandler';
+import { Router } from 'express';
+import { body } from 'express-validator';
+import { Request, Response } from 'express';
 
 import bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
-import HttpStatusCodes from "@src/common/constants/HttpStatusCodes";
-import ENV from "@src/common/constants/ENV";
+import HttpStatusCodes from '@src/common/constants/HttpStatusCodes';
+import ENV from '@src/common/constants/ENV';
 import prisma from '@src/db/prisma'; 
-import { authToken } from "@src/middleware/authToken";
+import { authTokenFunction } from '@src/middleware/authToken';
+import { User } from '@prisma/client';
 
 const router = Router();
 
@@ -54,7 +55,7 @@ router.post(
   ],
   handleValidationErrors, // Apply the common error handling middleware
   async (req: Request, res: Response) => {
-    const { name, username, email, password, contactNo, bio } = req.body;
+    const { name, username, email, password, contactNo, bio } = req.body as User;
 
     // Check if user already exists
     const existingUser = await prisma.user.findFirst({
@@ -126,7 +127,7 @@ router.post(
       },
       token: `Bearer ${token}`,
     });
-  }
+  },
 );
 
 
@@ -147,7 +148,7 @@ router.post(
   ],
   handleValidationErrors, // Apply the common error handling middleware
   async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+    const { email, password } = req.body as { email: string, password: string };
 
     // Find user by username or email
     const user = await prisma.user.findFirst({
@@ -201,7 +202,7 @@ router.post(
       },
       token: `Bearer ${token}`,
     });
-  }
+  },
 );
 
 router.post('/logout', (req: Request, res: Response) => {
@@ -212,7 +213,7 @@ router.post('/logout', (req: Request, res: Response) => {
 
 router.get(
   '/',
-  authToken,
+  authTokenFunction(['user']),
   async (req: Request, res: Response) => {
     const user = await prisma.user.findFirst({
       where: {
@@ -227,10 +228,10 @@ router.get(
       msg: 'Logged in successfully!',
       user: {
         ...user,
-        password: null
+        password: null,
       },
     });
-  }
+  },
 );
 
 export default router;

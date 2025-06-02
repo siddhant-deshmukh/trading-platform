@@ -53,7 +53,7 @@ export default tseslint.config(
       'max-len': [
         'warn',
         {
-          'code': 80,
+          'code': 150,
         },
       ],
       '@stylistic/ts/semi': ['warn', 'always'],
@@ -90,14 +90,14 @@ export default tseslint.config(
       'n/no-missing-import': 0,
       'n/no-unpublished-import': 0,
       'prefer-const': 'warn',
-      // adding following
-      '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unsafe-argument': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/prefer-optional-chain': 'off',
-      '@typescript-eslint/dot-notation': 'off'
+      // // adding following
+      // '@typescript-eslint/no-unsafe-member-access': 'off',
+      // '@typescript-eslint/no-unsafe-assignment': 'off',
+      // '@typescript-eslint/no-unsafe-argument': 'off',
+      // '@typescript-eslint/no-explicit-any': 'off',
+      // '@typescript-eslint/no-unsafe-call': 'off',
+      // '@typescript-eslint/prefer-optional-chain': 'off',
+      // '@typescript-eslint/dot-notation': 'off',
     },
   },
 );

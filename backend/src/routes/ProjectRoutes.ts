@@ -2,7 +2,7 @@ import { body, param } from 'express-validator';
 import { Router, Request, Response } from 'express';
 
 import prisma from '@src/db/prisma';
-import { ProjectStatus } from '@prisma/client';
+import { Prisma, Project, ProjectStatus } from '@prisma/client';
 import HttpStatusCodes from '@src/common/constants/HttpStatusCodes';
 import handleValidationErrors from '@src/middleware/expressValidatorErrorHandler';
 import { authTokenFunction } from '@src/middleware/authToken';
@@ -14,39 +14,40 @@ router.get('/',
   async (req: Request, res: Response) => {
     const { tab } = req.query;
     const userId = req.user_id;
-    // Build the where clause conditionally
-    const whereClause: any = {};
+    const whereClause: Prisma.ProjectWhereInput = {};
 
-    if (tab === 'my_projects' && userId) {
+    if (!userId) {
+      whereClause.status = ProjectStatus.PENDING; //* All Pending Projects
+    } else if (tab === 'my_projects') { //* Projects create by current user
       whereClause.ownerId = userId;
       whereClause.AND = [
         { ownerId: userId },
-        // { ownerId: }
       ];
-    } else if (tab === 'active_bids' && userId) {
+    } else if (tab === 'active_bids') { //* Project for which user has created bid and has been selected
       whereClause.AND = [
         { selectedBid: { bidderId: userId } },
-        { status: { not: ProjectStatus.PENDING } }
+        { status: { not: ProjectStatus.PENDING } },
       ];
-    } else if (tab === 'bids' && userId) {
+    } else if (tab === 'bids') { //* All projects for which user has created bid
       whereClause.bids = {
         some: {
-          bidderId: userId, // Filter projects that have AT LEAST ONE bid with this ownerId
-        }
-      }
-    } else if (tab === 'open_projects' && userId) {
+          bidderId: userId, 
+        },
+      };
+    } else if (tab === 'open_projects') { 
+      //* All projects which are open ( where project is not created by user himself no bid has been selected by the owner )
       whereClause.AND = [
         { ownerId: { not: userId } },
         {
           OR: [
             { selectedBid: null },
-            { selectedBid: { bidderId: { not: userId } } }
-          ]
+            { selectedBid: { bidderId: { not: userId } } },
+          ],
         },
-        { status: ProjectStatus.PENDING }
+        { status: ProjectStatus.PENDING },
       ];
     } else {
-      whereClause.status = ProjectStatus.PENDING
+      whereClause.status = ProjectStatus.PENDING; //* All Pending Projects
     }
 
     const projects = await prisma.project.findMany({
@@ -57,10 +58,10 @@ router.get('/',
           include: {
             bidder: {
             },
-          }
+          },
         },
         owner: {
-          omit: { password: true }
+          omit: { password: true },
         },
         _count: {
           select: {
@@ -99,16 +100,13 @@ router.post(
       .isISO8601()
       .toDate() // Convert to Date object
       .withMessage('Deadline must be a valid date (ISO8601 format).'),
-    // Validation for status: optional, if present must be a valid ProjectStatus enum value
-    // body('status')
-    //   .optional()
-    //   .isIn(Object.values(ProjectStatus))
-    //   .withMessage(`Status must be one of: ${Object.values(ProjectStatus).join(', ')}.`),
   ],
   handleValidationErrors, // Apply the common error handling middleware
   authTokenFunction(['user']),
   async (req: Request, res: Response) => {
-    const { title, description, budgetMin, budgetMax, deadline } = req.body;
+    const { title, description, budgetMin, budgetMax, deadline } = req.body as {
+       title: string, description: string, budgetMin?: string, budgetMax?: string, deadline: Date, 
+    };
     const ownerId = req.user_id; // Assumed to be set by an authentication middleware
 
     if (!ownerId) {
@@ -128,7 +126,7 @@ router.post(
       },
     });
     res.status(HttpStatusCodes.CREATED).json({ msg: 'Project created successfully!', project: newProject });
-  }
+  },
 );
 
 router.get(
@@ -137,7 +135,7 @@ router.get(
     // Validation for project_id: must be a string and not empty
     param('project_id')
       .notEmpty()
-      .withMessage('Product ID is required and must be a string.'),
+      .withMessage('Project ID is required and must be a string.'),
   ],
   handleValidationErrors,
   authTokenFunction(['all', 'bidder', 'owner']),
@@ -150,10 +148,10 @@ router.get(
       project.bids = await prisma.bid.findMany({
         where: { projectId: project.id },
         include: {
-          bidder: { omit: { 'password': true, 'email': true, contactNo: true } }
+          bidder: { omit: { 'password': true, 'email': true, contactNo: true } },
         },
         orderBy: { createdAt: 'desc' },
-      })
+      });
     }
     if (project && req.user_id && project.selectedBid && ( project.ownerId == req.user_id || project.selectedBid?.bidderId == req.user_id)) {
       project.bidMsgs = await prisma.bidTracking.findMany({
@@ -161,9 +159,9 @@ router.get(
         orderBy: { createdAt: 'desc' },
         include: {
           user: {
-            select: { id: true, username: true, name: true }
-          }
-        }
+            select: { id: true, username: true, name: true },
+          },
+        },
       });
     }
 
@@ -171,14 +169,14 @@ router.get(
       project.bids = await prisma.bid.findMany({
         where: { AND: { projectId: project.id, bidderId: req.user_id } },
         include: {
-          bidder: { omit: { 'password': true, 'email': true, contactNo: true } }
+          bidder: { omit: { 'password': true, 'email': true, contactNo: true } },
         },
         orderBy: { createdAt: 'desc' },
       });
     }
 
     res.status(HttpStatusCodes.OK).json(project);
-  }
+  },
 );
 
 router.put(
@@ -187,7 +185,7 @@ router.put(
     // Validation for project_id
     param('project_id')
       .notEmpty()
-      .withMessage('Product ID is required and must be a string.'),
+      .withMessage('Project ID is required and must be a string.'),
     body('title')
       .optional()
       .notEmpty()
@@ -209,15 +207,11 @@ router.put(
       .isISO8601()
       .toDate()
       .withMessage('Deadline must be a valid date (ISO8601 format).'),
-    // body('status')
-    //   .optional()
-    //   .isIn(Object.values(ProjectStatus))
-    //   .withMessage(`Status must be one of: ${Object.values(ProjectStatus).join(', ')}.`),
   ],
   handleValidationErrors,
   authTokenFunction(['owner']),
   async (req: Request, res: Response) => {
-    const { title, description, budgetMin, budgetMax, deadline } = req.body;
+    const { title, description, budgetMin, budgetMax, deadline } = req.body as Partial<Project> & { budgetMax:string, budgetMin: string };
     const projectId = req.project!.id; // Get the project ID from the attached project
 
     const updatedProject = await prisma.project.update({
@@ -232,7 +226,7 @@ router.put(
       },
     });
     res.status(HttpStatusCodes.OK).json({ msg: 'Project updated successfully!', project: updatedProject });
-  }
+  },
 );
 
 
@@ -242,7 +236,7 @@ router.delete(
     // Validation for project_id
     param('project_id')
       .notEmpty()
-      .withMessage('Product ID is required and must be a string.'),
+      .withMessage('Project ID is required and must be a string.'),
   ],
   handleValidationErrors,
   authTokenFunction(['owner']),
@@ -253,7 +247,7 @@ router.delete(
       where: { id: projectId },
     });
     res.status(HttpStatusCodes.OK).json({ msg: 'Project deleted successfully!' });
-  }
+  },
 );
 
 export default router;

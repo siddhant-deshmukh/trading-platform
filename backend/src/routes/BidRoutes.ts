@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { ProjectStatus, BidStatus, BidTrackingType } from '@prisma/client';
+import { ProjectStatus, BidStatus, BidTrackingType, Bid } from '@prisma/client';
 import { body, param } from 'express-validator';
 import prisma from '@src/db/prisma';
 import handleValidationErrors from '@src/middleware/expressValidatorErrorHandler';
@@ -73,7 +73,7 @@ router.post(
   handleValidationErrors,
   authTokenFunction(['user']),
   async (req: Request, res: Response) => {
-    const { projectId, estimatedTime, quote, message } = req.body;
+    const { projectId, estimatedTime, quote, message } = req.body as { projectId: number, estimatedTime: number, quote: string, message: string };
     const bidderId = req.user_id; // Assumed to be set by an authentication middleware
 
     if (!bidderId) {
@@ -129,7 +129,7 @@ router.post(
       },
     });
     res.status(HttpStatusCodes.CREATED).json({ msg: 'Bid created successfully!', bid: newBid });
-  }
+  },
 );
 
 
@@ -144,7 +144,7 @@ router.get(
   authTokenFunction(['owner', 'bidder']), // Use middleware to fetch and check access
   (req: Request, res: Response) => {
     res.status(HttpStatusCodes.OK).json(req.bid);
-  }
+  },
 );
 
 
@@ -171,7 +171,7 @@ router.put(
   handleValidationErrors,
   authTokenFunction(['bidder']), // Use middleware to fetch and check access
   async (req: Request, res: Response) => {
-    const { estimatedTime, quote, message } = req.body;
+    const { estimatedTime, quote, message } = req.body as Partial<Bid>;
     const bid = req.bid!;
     const userId = req.user_id;
 
@@ -191,13 +191,13 @@ router.put(
       where: { id: bid.id },
       data: {
         estimatedTime,
-        quote: quote ? parseFloat(quote) : undefined,
+        quote,
         message,
         updatedAt: new Date(),
       },
     });
     res.status(HttpStatusCodes.OK).json({ msg: 'Bid updated successfully!', bid: updatedBid });
-  }
+  },
 );
 
 
@@ -230,7 +230,7 @@ router.delete(
       where: { id: bid.id },
     });
     res.status(HttpStatusCodes.OK).json({ msg: 'Bid deleted successfully!' });
-  }
+  },
 );
 
 
@@ -243,11 +243,7 @@ router.post(
     body('status')
       .notEmpty()
       .isIn([BidStatus.IN_PROGRESS, BidStatus.COMPLETED, BidStatus.REJECTED])
-      .withMessage('Status type must be either "bidderStatus" or "customerStatus".'),
-    // body('newStatus')
-    //   .notEmpty()
-    //   .isIn(Object.values(BidStatus))
-    //   .withMessage(`New status must be one of: ${Object.values(BidStatus).join(', ')}.`),
+      .withMessage('Status type must be either bidderStatus or customerStatus.'),
   ],
   handleValidationErrors,
   authTokenFunction(['bidder', 'owner']),
@@ -257,8 +253,8 @@ router.post(
       return;
     }
 
-    const { bidderStatus: current_bidder_status, customerStatus: current_owner_status } = req.bid
-    const { status } = req.body;
+    const { bidderStatus: current_bidder_status, customerStatus: current_owner_status } = req.bid;
+    const { status } = req.body as { status: BidStatus };
 
     let new_bid_customer_status: BidStatus | undefined;
     let new_bid_bidder_status: BidStatus | undefined;
@@ -305,26 +301,26 @@ router.post(
         (new_bid_customer_status === undefined && new_bid_bidder_status === undefined) ? [] : [
           prisma.bid.update({
             where: {
-              id: req.bid.id
+              id: req.bid.id,
             },
             data: {
               ...( new_bid_bidder_status !== undefined ? { bidderStatus: new_bid_bidder_status } : {}),
               ...( new_bid_customer_status !== undefined ? { customerStatus: new_bid_customer_status } : {}),
-            }
-          })
+            },
+          }),
         ]
       ),
       ...(
         (new_selected_bid_id === undefined && new_project_status === undefined) ? [] : [
           prisma.project.update({
             where: {
-              id: req.bid.projectId
+              id: req.bid.projectId,
             },
             data: {
               ...( new_selected_bid_id !== undefined ? { selectedBidId: new_selected_bid_id } : {}),
               ...( new_project_status !== undefined ? { status: new_project_status } : {}),
-            }
-          })
+            },
+          }),
         ]
       ),
       prisma.bidTracking.create({
@@ -333,11 +329,11 @@ router.post(
           message: `@${user_name} chage the staus to ${status}`,
           userId: req.user_id,
           type: BidTrackingType.SELECTION,
-        }
-      })
-    ])
+        },
+      }),
+    ]);
     res.status(HttpStatusCodes.OK).json({ msg: 'changed status', success: true });
-  }
+  },
 );
 
 router.post(
@@ -358,6 +354,7 @@ router.post(
   handleValidationErrors,
   authTokenFunction(['bidder', 'owner']),
   async (req: Request, res: Response) => {
+    const { msg } = req.body as { msg: string };
     if (!req.bid || !req.user_id) {
       res.status(HttpStatusCodes.NOT_FOUND).json({ msg: 'Not Found' });
       return;
@@ -365,30 +362,19 @@ router.post(
     const data = await prisma.bidTracking.create({
       data: {
         bidId: req.bid.id,
-        message: req.body.msg,
+        message: msg,
         userId: req.user_id,
         type: BidTrackingType.MESSAGE,
       },
       include: {
         user: {
-          select: { name: true, username: true, id: true }
-        }
-      }
+          select: { name: true, username: true, id: true },
+        },
+      },
     });
     res.status(HttpStatusCodes.OK).json({ msg: 'changed status', data });
-  }
+  },
 );
 
-
-async function addBidChangeTracking({ bidId, message, userId, typeMsg }: { bidId: number, message: string, userId: number, typeMsg: boolean }) {
-  return prisma.bidTracking.create({
-    data: {
-      bidId,
-      message,
-      userId,
-      type: typeMsg ? BidTrackingType.MESSAGE : BidTrackingType.SELECTION,
-    }
-  })
-}
 
 export default router;

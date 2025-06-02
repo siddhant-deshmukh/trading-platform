@@ -20,7 +20,7 @@ export class RouteError extends Error {
 }
 
 /**
- * Handle "parseObj" errors.
+ * Handle 'parseObj' errors.
  */
 export class ValidationError extends RouteError {
 

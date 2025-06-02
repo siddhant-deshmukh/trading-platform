@@ -107,7 +107,7 @@ enum HttpStatusCodes {
     /**
      * This is an example of industry practice contradicting the standard.
      * The HTTP/1.0 specification (RFC 1945) required the client to perform a temporary redirect
-     * (the original describing phrase was "Moved Temporarily"), but popular browsers implemented 302
+     * (the original describing phrase was 'Moved Temporarily'), but popular browsers implemented 302
      * with the functionality of a 303 See Other. Therefore, HTTP/1.1 added status codes 303 and 307
      * to distinguish between the two behaviours. However, some Web applications and frameworks
      * use the 302 status code as if it were the 303.
@@ -136,7 +136,7 @@ enum HttpStatusCodes {
     USE_PROXY = 305,
 
     /**
-     * No longer used. Originally meant "Subsequent requests should use the specified proxy."
+     * No longer used. Originally meant 'Subsequent requests should use the specified proxy.'
      */
     SWITCH_PROXY = 306,
 
@@ -165,7 +165,7 @@ enum HttpStatusCodes {
      * Similar to 403 Forbidden, but specifically for use when authentication is required and has failed or has not yet
      * been provided. The response must include a WWW-Authenticate header field containing a challenge applicable to the
      * requested resource. See Basic access authentication and Digest access authentication. 401 semantically means
-     * "unauthenticated",i.e. the user does not have the necessary credentials.
+     * 'unauthenticated',i.e. the user does not have the necessary credentials.
      */
     UNAUTHORIZED = 401,
 
@@ -207,7 +207,7 @@ enum HttpStatusCodes {
     /**
      * The server timed out waiting for the request.
      * According to HTTP specifications:
-     * "The client did not produce a request within the time that the server was prepared to wait. The client MAY repeat the request without modifications at any later time."
+     * 'The client did not produce a request within the time that the server was prepared to wait. The client MAY repeat the request without modifications at any later time.'
      */
     REQUEST_TIMEOUT = 408,
 
@@ -222,7 +222,7 @@ enum HttpStatusCodes {
      * This should be used when a resource has been intentionally removed and the resource should be purged.
      * Upon receiving a 410 status code, the client should not request the resource in the future.
      * Clients such as search engines should remove the resource from their indices.
-     * Most use cases do not require clients and search engines to purge the resource, and a "404 Not Found" may be used instead.
+     * Most use cases do not require clients and search engines to purge the resource, and a '404 Not Found' may be used instead.
      */
     GONE = 410,
 
@@ -237,14 +237,14 @@ enum HttpStatusCodes {
     PRECONDITION_FAILED = 412,
 
     /**
-     * The request is larger than the server is willing or able to process. Previously called "Request Entity Too Large".
+     * The request is larger than the server is willing or able to process. Previously called 'Request Entity Too Large'.
      */
     PAYLOAD_TOO_LARGE = 413,
 
     /**
      * The URI provided was too long for the server to process. Often the result of too much data being encoded as a query-string of a GET request,
      * in which case it should be converted to a POST request.
-     * Called "Request-URI Too Long" previously.
+     * Called 'Request-URI Too Long' previously.
      */
     URI_TOO_LONG = 414,
 
@@ -257,7 +257,7 @@ enum HttpStatusCodes {
     /**
      * The client has asked for a portion of the file (byte serving), but the server cannot supply that portion.
      * For example, if the client asked for a part of the file that lies beyond the end of the file.
-     * Called "Requested Range Not Satisfiable" previously.
+     * Called 'Requested Range Not Satisfiable' previously.
      */
     RANGE_NOT_SATISFIABLE = 416,
 
@@ -300,9 +300,9 @@ enum HttpStatusCodes {
 
     /**
      * The origin server requires the request to be conditional.
-     * Intended to prevent "the 'lost update' problem, where a client
+     * Intended to prevent 'the 'lost update' problem, where a client
      * GETs a resource's state, modifies it, and PUTs it back to the server,
-     * when meanwhile a third party has modified the state on the server, leading to a conflict."
+     * when meanwhile a third party has modified the state on the server, leading to a conflict.'
      */
     PRECONDITION_REQUIRED = 428,
 
@@ -377,7 +377,7 @@ enum HttpStatusCodes {
 
     /**
      * The client needs to authenticate to gain network access.
-     * Intended for use by intercepting proxies used to control access to the network (e.g., "captive portals" used
+     * Intended for use by intercepting proxies used to control access to the network (e.g., 'captive portals' used
      * to require agreement to Terms of Service before granting full Internet access via a Wi-Fi hotspot).
      */
     NETWORK_AUTHENTICATION_REQUIRED = 511

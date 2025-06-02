@@ -1,16 +1,17 @@
 'use client'
 
+import React from 'react'
+import { useRouter } from 'next/navigation'
+
 import ConfirmationDialog from '@/components/ConfirmationDialog'
 import { useAuth } from '@/context/AuthContext'
 import { post } from '@/lib/apiCallClient'
 import { Bid } from '@/types'
-import { useRouter } from 'next/navigation'
-import React from 'react'
 
 
 function AssignProjectBtn(props: { bid: Bid, project_owner_id: number }) {
   const { project_owner_id } = props;
-  const { bidderId, projectId, quote, estimatedTime, id: bid_id } = props.bid;
+  const { quote, estimatedTime, id: bid_id } = props.bid;
   const router = useRouter()
 
   const { user } = useAuth();
@@ -28,7 +29,6 @@ function AssignProjectBtn(props: { bid: Bid, project_owner_id: number }) {
         router.refresh();
       }}
       postRejectionFunction={()=> {
-
       }}
       />
   )

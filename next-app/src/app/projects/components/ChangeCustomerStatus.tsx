@@ -1,18 +1,19 @@
 'use client'
 
-import { useAuth } from '@/context/AuthContext'
-import { BidStatus, ProjectWithRelations } from '@/types'
 import React from 'react'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-
-import { FaAngleDown } from 'react-icons/fa';
-import ConfirmationDialog from '@/components/ConfirmationDialog';
-import { post } from '@/lib/apiCallClient';
 import { useRouter } from 'next/navigation';
+import { FaAngleDown } from 'react-icons/fa';
+
+import { post } from '@/lib/apiCallClient';
+import { useAuth } from '@/context/AuthContext'
+import { Button } from '@/components/ui/button';
+import { BidStatus, ProjectWithRelations } from '@/types'
+import ConfirmationDialog from '@/components/ConfirmationDialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 function ChangeCustomerStatus(props: ProjectWithRelations) {
   const { selectedBid, ownerId, status: project_status } = props
+
   const { user } = useAuth();
   const router = useRouter();
 
@@ -30,7 +31,6 @@ function ChangeCustomerStatus(props: ProjectWithRelations) {
   if(!selectedBid) {
     return (
       <span className={`status-badge badge-${project_status}`}>
-        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         {project_status}
       </span>
     )
@@ -69,7 +69,6 @@ function ChangeCustomerStatus(props: ProjectWithRelations) {
   } else {
     return (
       <span className={`status-badge badge-${selectedBid.customerStatus}`}>
-        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         {selectedBid.customerStatus}
       </span>
     )

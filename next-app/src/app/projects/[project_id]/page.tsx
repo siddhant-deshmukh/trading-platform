@@ -17,7 +17,7 @@ async function Projects({ params, searchParams }: NextServerComponentProps) {
 
   const auth_token = (await cookies()).get('auth_token_next')
 
-  const { data } = await get<ProjectWithRelations>(`/product/${project_id}${user_type ? `?user_type=${user_type}` : ''} `, {
+  const { data } = await get<ProjectWithRelations>(`/project/${project_id}${user_type ? `?user_type=${user_type}` : ''} `, {
     headers: {
       'Authorization': auth_token?.value
     }

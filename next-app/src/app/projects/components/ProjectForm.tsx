@@ -49,8 +49,8 @@ const CreateProjectForm: React.FC = () => {
 
     try {
       // Make the POST request to your API endpoint
-      // Assuming your API endpoint for creating projects is '/product'
-      const data = await post<IProject>('/product', payload);
+      // Assuming your API endpoint for creating projects is '/project'
+      const data = await post<IProject>('/project', payload);
       if (data) {
         setOpen(false);
         router.refresh();

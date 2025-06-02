@@ -51,7 +51,7 @@ const BidForm = (props: IProps) => {
 
     try {
       // Make the POST request to your API endpoint
-      // Assuming your API endpoint for creating projects is '/product'
+      // Assuming your API endpoint for creating projects is '/project'
       const data = await post<IProject>('/bid', payload);
       if (data) {
         setOpen(false);

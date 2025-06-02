@@ -1,6 +1,8 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3073'; // Replace with your actual backend URL
+const NEXTJS_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000/'; // Replace with your actual backend URL
+
 
 interface ApiResponse<T = any> {
   msg: string;
@@ -22,20 +24,20 @@ const apiCallServer = async <T = any>(
   method: 'GET' | 'POST' | 'PUT' | 'DELETE',
   url: string,
   data?: any,
-  config?: AxiosRequestConfig
+  config?: AxiosRequestConfig,
+  is_next_url?: boolean
 ): Promise<FuncResponse<T>> => {
   try {
 
     const axiosConfig: AxiosRequestConfig = {
       method,
-      url: `${API_BASE_URL}${url}`,
+      url: is_next_url? `${NEXTJS_BASE_URL}api${url}`: `${API_BASE_URL}${url}`,
       data,
       ...config,
     };
     //* Will send cookies by default
     axios.defaults.withCredentials = true;
     const response: AxiosResponse<T> = await axios(axiosConfig);
-
     const { status, data: responseData } = response;
 
     return { data: responseData, status, err: false, error: null, msg: '' };

@@ -124,7 +124,7 @@ router.post(
         username: newUser.username,
         email: newUser.email,
       },
-      token,
+      token: `Bearer ${token}`,
     });
   }
 );
@@ -199,7 +199,7 @@ router.post(
         username: user.username,
         email: user.email,
       },
-      token,
+      token: `Bearer ${token}`,
     });
   }
 );

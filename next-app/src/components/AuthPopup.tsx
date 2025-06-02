@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { post, get } from '@/lib/apiCallClient'; // Import the apiCall functions
+import { postNextUrl, get } from '@/lib/apiCallClient'; // Import the apiCall functions
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -57,7 +57,7 @@ function AuthPopup() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const response = await post<{ user: User; token: string }>('/login', {
+    const response = await postNextUrl<{ user: User; token: string }>('/login', {
       email: loginEmail,
       password: loginPassword,
     });
@@ -72,7 +72,7 @@ function AuthPopup() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    const response = await post<{ user: User; token: string }>('/register', {
+    const response = await postNextUrl<{ user: User; token: string }>('/register', {
       name: registerName,
       username: registerUsername,
       email: registerEmail,

@@ -15,10 +15,19 @@ const apiCall = async <T = any>(
   method: 'GET' | 'POST' | 'PUT' | 'DELETE',
   url: string,
   data?: any,
-  config?: AxiosRequestConfig
+  config: AxiosRequestConfig = { headers: {} },
+  is_next_url?: boolean
 ): Promise<T | null> => {
   try {
-    const { data: resData, error } = await apiCallServer(method, url, data, config);
+    if (!config.headers) {
+      config.headers = {};
+    }
+    const authToken = localStorage.getItem('authToken');
+    if(authToken) {
+      config.headers.Authorization = authToken;
+    }
+
+    const { data: resData, error } = await apiCallServer(method, url, data, config, is_next_url);
     if(!resData) {
       throw error
     }
@@ -58,6 +67,8 @@ export const get = <T = any>(url: string, config?: AxiosRequestConfig) =>
   apiCall<T>('GET', url, undefined, config);
 export const post = <T = any>(url: string, data?: any, config?: AxiosRequestConfig) =>
   apiCall<T>('POST', url, data, config);
+export const postNextUrl = <T = any>(url: string, data?: any, config?: AxiosRequestConfig) =>
+  apiCall<T>('POST', url, data, config, true);
 export const put = <T = any>(url: string, data?: any, config?: AxiosRequestConfig) =>
   apiCall<T>('PUT', url, data, config);
 export const del = <T = any>(url: string, config?: AxiosRequestConfig) =>

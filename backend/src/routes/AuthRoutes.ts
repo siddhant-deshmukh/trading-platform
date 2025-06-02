@@ -100,7 +100,8 @@ router.post(
       sameSite: 'none',
       // domain: ENV.ServerOrigin,
       path: '/',
-      maxAge: ENV.TokenExpiryTime
+      maxAge: ENV.TokenExpiryTime,
+      partitioned: true,
     });
 
 
@@ -111,7 +112,8 @@ router.post(
       sameSite: 'none',
       // domain: ENV.ClientOriginDomain,
       path: '/',
-      maxAge: ENV.TokenExpiryTime
+      maxAge: ENV.TokenExpiryTime,
+      partitioned: true,
     });
 
     res.status(HttpStatusCodes.CREATED).json({
@@ -176,7 +178,8 @@ router.post(
       sameSite: 'none',
       // domain: ENV.ServerOrigin,
       path: '/',
-      maxAge: ENV.TokenExpiryTime
+      maxAge: ENV.TokenExpiryTime,
+      partitioned: true,
     });
     res.cookie('auth_token_next', `Bearer ${token}`, {
       httpOnly: true,
@@ -184,7 +187,8 @@ router.post(
       sameSite: 'none',
       // domain: ENV.ClientOriginDomain,
       path: '/',
-      maxAge: ENV.TokenExpiryTime
+      maxAge: ENV.TokenExpiryTime,
+      partitioned: true,
     });
 
 

@@ -9,6 +9,7 @@ import { cookies } from 'next/headers';
 async function Projects({ searchParams } : NextServerComponentProps) {
   const { tab } = await searchParams;
   const auth_token = (await cookies()).get('auth_token_next')
+
   const { data: projects, msg, err } = await get<IProject[]>(`/project?tab=${tab}`, {
     headers: {
       'Authorization': auth_token?.value

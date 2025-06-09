@@ -1,5 +1,5 @@
-import { IProject, ProjectStatus } from "@/types";
-import Link from "next/link";
+import { IProject } from "@/types";
+import { ClientLink } from "./ClientLink";
 
 interface ProjectCardProps {
   project: IProject;
@@ -8,7 +8,7 @@ interface ProjectCardProps {
 const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
 
   return (
-    <Link href={`/projects/${project.id}`}>
+    <ClientLink href={`/projects/${project.id}`}>
       <div className="bg-white shadow-md rounded-lg p-6 mb-4">
         <h2 className="text-xl font-semibold mb-2">{project.title}</h2>
         {project.description && (
@@ -64,7 +64,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
           )}
         </div>
       </div>
-    </Link>
+    </ClientLink>
   );
 };
 

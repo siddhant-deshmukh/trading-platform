@@ -8,8 +8,9 @@ import { createContext, Dispatch, SetStateAction, useContext, useEffect, useStat
 export const AuthContext = createContext<{
   user: IUser | null,
   setUser: Dispatch<SetStateAction<IUser | null>>,
-  authLoading: boolean
-}>({ user: null, setUser: ()=> {}, authLoading: true });
+  authLoading: boolean,
+  setAuthLoading: (value: SetStateAction<boolean>) => void
+}>({ user: null, setUser: ()=> {}, authLoading: true, setAuthLoading: () => {} });
 
 export const AuthProvider = ({ children }: { children : React.ReactNode }) => {
   const [user, setUser] = useState<IUser | null>(null);
@@ -26,7 +27,7 @@ export const AuthProvider = ({ children }: { children : React.ReactNode }) => {
     });
   }, [setAuthLoading]);
 
-  return <AuthContext.Provider value={{ user, setUser, authLoading }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, setUser, authLoading, setAuthLoading }}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => useContext(AuthContext);

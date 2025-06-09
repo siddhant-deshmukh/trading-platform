@@ -6,7 +6,6 @@ import AuthPopup from "./AuthPopup";
 import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { post } from "@/lib/apiCallClient";
-import LoadingSpinner from "./LoadingSpinner";
 import { FaArrowLeft, FaUser } from "react-icons/fa";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { useEffect, useState } from "react";
@@ -15,7 +14,7 @@ import { useEffect, useState } from "react";
 
 function Navbar() {
 
-  const { user, authLoading, setUser } = useAuth();
+  const { user, authLoading, setUser, setAuthLoading } = useAuth();
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
@@ -36,14 +35,15 @@ function Navbar() {
   const isParentPath = pathName === '/projects' || pathName === '/';
 
   const handleTabChange = (value: string) => {
-    // Navigate to the corresponding route
-    // Ensure these paths match your actual page routes
+    if (searchParams.get('tab') === value) return;
+    setAuthLoading(true);
     router.push(`?tab=${value}`, { scroll: false });
     // Add more navigation logic for other tabs
   };
-  if (authLoading || !hasMounted) {
+  // authLoading
+  if (!hasMounted) {
     return <div className="sticky top-0 w-full flex items-center justify-between py-2 bg-primary-foreground">
-      <div className="w-96 bg-slate-100 h-7 animate-pulse">
+      <div className="w-full bg-slate-100 h-7 animate-pulse">
       </div>
     </div>
   }
@@ -68,7 +68,7 @@ function Navbar() {
       }
       {
         !isParentPath &&
-        <Button variant="outline" onClick={() => { router.back() }}>
+        <Button variant="outline" onClick={() => { setAuthLoading(false); router.back() }}>
           <FaArrowLeft />
         </Button>
       }

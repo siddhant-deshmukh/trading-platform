@@ -39,7 +39,9 @@ export default function RootLayout({
           <Suspense fallback={<div></div>}>
             <Navbar />
           </Suspense>
-          <LoadingScreen />
+          <Suspense fallback={<div></div>}>
+            <LoadingScreen />
+          </Suspense>
           {children}
           <div className='sticky bottom-5 right-1'>
             <CreateProjectForm />

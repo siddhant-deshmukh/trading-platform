@@ -36,10 +36,10 @@ export default function RootLayout({
       > 
         <ScrollToTop />
         <AuthProvider>
-          <Suspense fallback={<div></div>}>
+          <Suspense fallback={<div>Loading...</div>}>
             <Navbar />
           </Suspense>
-          <Suspense fallback={<div></div>}>
+          <Suspense fallback={<div>Loading...</div>}>
             <LoadingScreen />
           </Suspense>
           {children}

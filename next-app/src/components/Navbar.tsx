@@ -41,7 +41,7 @@ function Navbar() {
     // Add more navigation logic for other tabs
   };
   // authLoading
-  if (!hasMounted) {
+  if ( (authLoading && !user) || !hasMounted) {
     return <div className="sticky top-0 w-full flex items-center justify-between py-2 bg-primary-foreground">
       <div className="w-full bg-slate-100 h-7 animate-pulse">
       </div>

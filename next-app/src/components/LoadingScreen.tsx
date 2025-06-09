@@ -7,9 +7,15 @@ import { useEffect, useState } from 'react';
 const LoadingScreen = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { authLoading, setAuthLoading } = useAuth();
+  const { user, authLoading, setAuthLoading } = useAuth();
   // const [authLoading, setAuthLoading] = useState(false);
   const [prevPath, setPrevPath] = useState('');
+
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   useEffect(() => {
     const currentPath = pathname + searchParams.toString();
@@ -25,10 +31,10 @@ const LoadingScreen = () => {
     }
 
     setPrevPath(currentPath);
-    setAuthLoading(false);
-  }, [pathname, searchParams, prevPath]);
+    // setAuthLoading(false);
+  }, [pathname, user, searchParams, prevPath]);
 
-  if (!authLoading) return null;
+  if (!hasMounted || !authLoading) return null;
 
   return (
     <div className="fixed inset-0 w-full flex flex-col h-screen z-50">
